@@ -1,22 +1,40 @@
 import requests
-import base64
-import cv2
-import numpy as np
+import base64 as b64
+import os
 
-# Send the request to the Flask application
-response = requests.post("http://localhost:5000/recognize", json={"image_url": "https://st2.depositphotos.com/2818715/5612/i/600/depositphotos_56125979-stock-photo-successful-business-team-in-portrait.jpg"})
 
-# Get the binary image from the response
-recognized_image = response.json()["recognized_image"]
+# URL de l'API Flask
+url = "http://localhost:5000/recognize"
 
-# Decode the binary image from base64
-recognized_image = base64.b64decode(recognized_image)
+# Données de la requête POST, incluant l'URL de l'image
+data = { "image_url": "https://st2.depositphotos.com/2818715/5612/i/600/depositphotos_56125979-stock-photo-successful-business-team-in-portrait.jpg" }
 
-# Convert the binary image to a numpy array
-recognized_image = np.frombuffer(recognized_image, dtype=np.uint8)
+# Envoyer la requête POST à l'API
+response = requests.post(url, json=data)
 
-# Decode the numpy array to an image
-recognized_image = cv2.imdecode(recognized_image, cv2.IMREAD_COLOR)
+# Vérifier que la réponse est correcte
+if response.status_code == 200:
+    # Décoder la réponse JSON
+    response_data = response.json()
 
-# Save the image to disk
-cv2.imwrite("recognized_image.jpg", recognized_image)
+    # Récupérer l'image complète avec les visages détectés
+    image_data = response_data["image"]
+    image_data = image_data.encode("utf-8")
+
+    # Enregistrer l'image sur le disque
+    image_bytes = b64.decodebytes(image_data)
+    with open("image_with_faces.jpg", "wb") as f:
+        f.write(image_bytes)
+
+    # Récupérer les images des visages détectés
+    face_images = response_data["faces"]
+
+    # Enregistrer chaque image de visage sur le disque
+    for i, face_image in enumerate(face_images):
+        face_image = face_image.encode("utf-8")
+        with open(f"face_{i}.jpg", "wb") as f:
+            f.write(b64.b64decode(face_image))
+
+else:
+    # Afficher un message d'erreur si la réponse n'est pas correcte
+    print("Error:", response.text)

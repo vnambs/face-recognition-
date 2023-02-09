@@ -32,27 +32,39 @@ def recognize_face(image_url):
     # Fusionner les résultats des deux classificateurs
     faces = np.concatenate((faces1, faces2, faces3, faces4))
 
+    face_images = []
     # Dessiner un rectangle autour des visages détectés
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    return image
+         # Extraire le visage de l'image
+        face_image = image[y:y+h, x:x+w]
+
+        # Convertir l'image en format base64 pour la retourner dans la réponse JSON
+        retval, buffer = cv2.imencode('.jpg', face_image)
+        jpg_as_text = b64.b64encode(buffer).decode('utf-8')
+        face_images.append(jpg_as_text)
+
+    return image, face_images
 
 @app.route("/recognize", methods=["POST"])
 def recognize():
     # Récupérer l'URL de l'image à partir des données de la requête
     image_url = request.json["image_url"]
 
-    # Appeler la fonction de reconnaissance de visage avec l'URL de l'image
-    recognized_image = recognize_face(image_url)
+    # Appeler la fonction de reconnaissance d'image avec l'URL de l'image
+    image, face_images = recognize_face(image_url)
 
-    # Convertir l'image reconnue en format base64 pour la retourner dans la réponse JSON
-    retval, buffers = cv2.imencode('.jpg', recognized_image)
-    jpg_as_text = b64.b64encode(buffers)
+    # Convertir l'image avec les visages détectés en format base64 pour la retourner dans la réponse JSON
+    retval, buffers = cv2.imencode('.jpg', image)
+    image_with_faces = b64.b64encode(buffers).decode('utf-8')
 
-    # Construire et renvoyer la réponse JSON
+
+   # Construire et renvoyer la réponse JSON
     response = {
-        "recognized_image": jpg_as_text.decode('utf-8')
+        "image": image_with_faces,
+        "faces": face_images,
+        "face_count":len(face_images)
     }
     return jsonify(response)
 

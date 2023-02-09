@@ -2,16 +2,17 @@
 
 ## Prérequis
 
-  * Python 3.x
-  * OpenCV
-  * Flask
-  * Requests
-  * Nump
+* Python 3.x
+* OpenCV
+* Flask
+* Requests
+* Nump
 
 ## Installation
+
 1. Clonez ce dépôt sur votre machine local :
   
-  ```bash 
+  ```bash
   git clone https://github.com/yourusername/face-recognition-flask.git
 2. Installez les dépendances nécessaires en utilisant pip :
 
@@ -31,5 +32,5 @@ Envoyez une requête POST à l'URL /recognize en incluant l'URL de l'image à re
 Vous recevrez une réponse JSON contenant l'image reconnue en format base64.
 
 ###Remarques
-Assurez-vous que le classificateur de visage Haar (fichier XML) se trouve dans le même répertoire que le fichier Python.
+classificateur de visage Haar (fichier XML) se trouve dans le même répertoire que le fichier Python.
 Vous pouvez ajouter d'autres classificateurs pour améliorer la reconnaissance de visage en les chargeant dans la fonction recognize_face.
