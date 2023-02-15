@@ -14,6 +14,7 @@
   
   ```bash
   git clone https://github.com/yourusername/face-recognition-flask.git
+
 2. Installez les dépendances nécessaires en utilisant pip :
 
   ```bash

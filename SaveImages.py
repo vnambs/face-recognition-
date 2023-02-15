@@ -14,6 +14,12 @@ response = requests.post(url, json=data)
 
 # Vérifier que la réponse est correcte
 if response.status_code == 200:
+    # Chemin du dossier de sortie pour les images
+    output_dir = "output"
+
+    # Si le dossier de sortie n'existe pas, le créer
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     # Décoder la réponse JSON
     response_data = response.json()
 
@@ -23,16 +29,16 @@ if response.status_code == 200:
 
     # Enregistrer l'image sur le disque
     image_bytes = b64.decodebytes(image_data)
-    with open("image_with_faces.jpg", "wb") as f:
+    with open("output/image_with_faces.jpg", "wb") as f:
         f.write(image_bytes)
 
     # Récupérer les images des visages détectés
-    face_images = response_data["faces"]
+    face_images = response_data["image"]
 
     # Enregistrer chaque image de visage sur le disque
     for i, face_image in enumerate(face_images):
         face_image = face_image.encode("utf-8")
-        with open(f"face_{i}.jpg", "wb") as f:
+        with open(f"output/face_{i}.jpg", "wb") as f:
             f.write(b64.b64decode(face_image))
 
 else:
