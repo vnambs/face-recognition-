@@ -41,8 +41,8 @@ def recognize_face(image_url):
         face_image = image[y:y+h, x:x+w]
 
         # Convertir l'image en format base64 pour la retourner dans la réponse JSON
-        retval, buffer = cv2.imencode('.jpg', face_image)
-        jpg_as_text = b64.b64encode(buffer).decode('utf-8')
+        retval, buffers = cv2.imencode('.jpg', face_image)
+        jpg_as_text = b64.b64encode(buffers).decode('utf-8')
         face_images.append(jpg_as_text)
 
     return image, face_images
